@@ -7,6 +7,9 @@
   them out of its entry chunk.
 - Solana sign-in and linking send `account.publicKey` beside the address (the
   full SIWS output shape).
+- `SignInDialog` takes `modal={false}` while a host overlay such as a wallet
+  picker is open above it, so the overlay stays clickable and outside clicks
+  do not dismiss the dialog mid-sign-in.
 
 ## 0.2.0
 

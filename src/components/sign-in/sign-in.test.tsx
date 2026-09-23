@@ -194,6 +194,41 @@ describe("SignInDialog", () => {
   })
 })
 
+describe("SignInDialog modal", () => {
+  // A host overlay (wallet picker) portalled outside the dialog.
+  const renderWithOverlay = (modal?: boolean) => {
+    const onOpenChange = vi.fn()
+    const onOverlay = vi.fn()
+    const fetch = stubFetch({ "GET /api/v1/capabilities": capabilities })
+    renderUi(
+      <>
+        <button onClick={onOverlay}>Wallet overlay</button>
+        <SignInDialog open onOpenChange={onOpenChange} modal={modal} />
+      </>,
+      fetch
+    )
+    return { onOpenChange, onOverlay }
+  }
+
+  it("dismisses on an outside click by default", async () => {
+    const user = userEvent.setup()
+    const { onOpenChange } = renderWithOverlay()
+    await screen.findByRole("button", { name: "Continue with GitHub" })
+    await user.click(document.body)
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it("leaves a host overlay usable and stays open when not modal", async () => {
+    const user = userEvent.setup()
+    const { onOpenChange, onOverlay } = renderWithOverlay(false)
+    await screen.findByRole("button", { name: "Continue with GitHub" })
+    await user.click(screen.getByRole("button", { name: "Wallet overlay" }))
+    expect(onOverlay).toHaveBeenCalledOnce()
+    expect(onOpenChange).not.toHaveBeenCalled()
+    expect(screen.getByRole("dialog")).toBeInTheDocument()
+  })
+})
+
 describe("RegisterForm", () => {
   it("shows availability and server errors on their fields", async () => {
     const user = userEvent.setup()
