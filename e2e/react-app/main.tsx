@@ -116,6 +116,9 @@ function Login() {
             <Field id="login-code" />
             <button>verify code</button>
           </form>
+          <button onClick={() => void login.sendTwoFactorCode()}>
+            resend code
+          </button>
         </>
       )}
     </section>

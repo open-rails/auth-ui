@@ -87,12 +87,18 @@ test("React hooks: register, TOTP, step-up guarded action, 2FA login", async ({
   await page.getByRole("button", { name: "sign in" }).click()
   await expect(page.getByTestId("login-step")).toHaveText("two_factor")
   await expect(page.getByTestId("login-method")).toHaveText("totp")
-  const seen = (await outbox(request, email)).length
+  let seen = (await outbox(request, email)).length
   await page.getByTestId("factor-email").click()
   await expect(page.getByTestId("login-method")).toHaveText("email")
-  await page.getByTestId("login-code").fill("000000")
+  const first = await nextCode(request, email, seen)
+  // AuthKit consumes an emailed code on any attempt, so a miss needs a resend.
+  await page
+    .getByTestId("login-code")
+    .fill(first === "000000" ? "111111" : "000000")
   await page.getByRole("button", { name: "verify code" }).click()
-  await expect(page.getByTestId("login-error")).not.toBeEmpty()
+  await expect(page.getByTestId("login-error")).toHaveText("invalid_code")
+  seen = (await outbox(request, email)).length
+  await page.getByRole("button", { name: "resend code" }).click()
   await page
     .getByTestId("login-code")
     .fill(await nextCode(request, email, seen))
