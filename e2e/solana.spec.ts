@@ -48,7 +48,7 @@ const wallet = () => {
 // Serves the built bundles; the core never touches React, so a stub satisfies
 // the hook's peer import.
 async function loadSolana(page: Page) {
-  await page.route("**/__auth-ui/react.js", (route) =>
+  await page.route("**/__auth-ui-react.js", (route) =>
     route.fulfill({
       contentType: "text/javascript",
       body: "const no = () => { throw new Error('react stub') }\nexport const useCallback = no, useEffect = no, useMemo = no, useRef = no, useState = no\n",
@@ -63,7 +63,7 @@ async function loadSolana(page: Page) {
   await page.route("**/solana-e2e.html", (route) =>
     route.fulfill({
       contentType: "text/html",
-      body: `<!doctype html><meta charset="utf-8"><script type="importmap">{"imports":{"react":"/__auth-ui/react.js"}}</script>`,
+      body: `<!doctype html><meta charset="utf-8"><script type="importmap">{"imports":{"react":"/__auth-ui-react.js"}}</script>`,
     })
   )
   await page.exposeFunction(
