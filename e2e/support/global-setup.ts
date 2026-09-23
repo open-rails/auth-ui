@@ -59,22 +59,26 @@ export default async function globalSetup() {
   }
 }
 
-// Bundles e2e/react-app against the built dist/ (run `pnpm build` first).
+// Bundles each e2e host app, self-contained, against the built dist/ (run
+// `pnpm build` first).
 async function buildReactApp() {
-  await build({
-    configFile: false,
-    logLevel: "warn",
-    root: path.join(root, "e2e/react-app"),
-    build: {
-      outDir: path.join(root, "e2e/.react-app"),
-      emptyOutDir: true,
-      minify: false,
-      rollupOptions: {
-        input: path.join(root, "e2e/react-app/main.tsx"),
-        output: { entryFileNames: "app.js" },
+  const apps = { app: "react-app", "sign-in": "sign-in-app" }
+  for (const [name, dir] of Object.entries(apps)) {
+    await build({
+      configFile: false,
+      logLevel: "warn",
+      root: path.join(root, "e2e", dir),
+      build: {
+        outDir: path.join(root, "e2e/.react-app"),
+        emptyOutDir: name === "app",
+        minify: false,
+        rollupOptions: {
+          input: path.join(root, "e2e", dir, "main.tsx"),
+          output: { entryFileNames: `${name}.js` },
+        },
       },
-    },
-  })
+    })
+  }
 }
 
 function freePort(): Promise<number> {
