@@ -5,6 +5,7 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import { AuthKitError } from "../client/errors.ts"
+import { AUTH_ERROR_STATUS } from "../client/generated/error-codes.ts"
 import { AuthUiProvider } from "../provider.tsx"
 import { de } from "../locales/de.ts"
 import { en } from "../locales/en.ts"
@@ -139,6 +140,15 @@ describe("locale bundles", () => {
       }
     }
   )
+
+  it("keys errors only by codes in the pinned AuthKit contract", () => {
+    // generic/network are local fallbacks; access_denied is the OIDC redirect error.
+    const local = new Set(["generic", "network", "access_denied"])
+    for (const code of Object.keys(en.errors)) {
+      if (!local.has(code))
+        expect(AUTH_ERROR_STATUS, code).toHaveProperty([code])
+    }
+  })
 
   it("has English copy for the codes the flows branch on", () => {
     const codes = [
