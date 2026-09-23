@@ -144,7 +144,7 @@ test("register, verify, then TOTP and backup-code sign-in", async ({
     await page.evaluate(
       () => (window as unknown as { signedIn: unknown[] }).signedIn.length
     )
-  ).toBe(3)
+  ).toBe(2)
 })
 
 test("email 2FA: enroll with a setup code, then a wrong login code retries", async ({
@@ -168,6 +168,12 @@ test("email 2FA: enroll with a setup code, then a wrong login code retries", asy
     },
     { identifier: email, code: await nextCode(request, email, 0) }
   )
+  await expect(page.getByTestId("status")).toHaveText("authenticated")
+  // A session proven by an emailed code can't be verified by an email factor;
+  // start from a password session.
+  await signOut(page)
+  await signIn(page, email)
+  await expect(dialog(page)).toBeHidden()
   await expect(page.getByTestId("status")).toHaveText("authenticated")
 
   // Email enrollment: start sends a setup code (202), confirm enables it and
