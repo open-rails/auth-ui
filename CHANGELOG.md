@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1
 
 - `VerifyLink` (and headless `useVerifyLink`) for the AuthKit verification
   link landing route: confirms the link token once and finishes any
