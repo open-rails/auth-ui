@@ -1,13 +1,12 @@
 // Test helpers (not exported from the package).
-import { cleanup, renderHook } from "@testing-library/react"
+import "../test/dom.ts"
+
+import { renderHook } from "@testing-library/react"
 import type { ReactNode } from "react"
-import { afterEach } from "vitest"
 
 import { createAuthClient, type AuthClient } from "../client/client.ts"
 import { json } from "../client/testing.ts"
 import { AuthProvider, type AuthProviderProps } from "./provider.tsx"
-
-afterEach(cleanup)
 
 export const token = (claims: Record<string, unknown>) =>
   `h.${btoa(JSON.stringify({ exp: 9_999_999_999, ...claims })).replace(/=+$/, "")}.s`
