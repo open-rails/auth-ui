@@ -62,18 +62,22 @@ export default async function globalSetup() {
 // Bundles each e2e host app, self-contained, against the built dist/ (run
 // `pnpm build` first).
 async function buildReactApp() {
-  const apps = { app: "react-app", "sign-in": "sign-in-app" }
-  for (const [name, dir] of Object.entries(apps)) {
+  const apps = {
+    app: "react-app/main.tsx",
+    "sign-in": "sign-in-app/main.tsx",
+    solana: "solana-app/main.ts",
+  }
+  for (const [name, entry] of Object.entries(apps)) {
     await build({
       configFile: false,
       logLevel: "warn",
-      root: path.join(root, "e2e", dir),
+      root: path.dirname(path.join(root, "e2e", entry)),
       build: {
         outDir: path.join(root, "e2e/.react-app"),
         emptyOutDir: name === "app",
         minify: false,
         rollupOptions: {
-          input: path.join(root, "e2e", dir, "main.tsx"),
+          input: path.join(root, "e2e", entry),
           output: { entryFileNames: `${name}.js` },
         },
       },

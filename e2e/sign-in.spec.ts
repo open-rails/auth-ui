@@ -72,6 +72,7 @@ test("register, verify, then TOTP and backup-code sign-in", async ({
   // Register → verify code → signed in, dialog closes itself.
   await openDialog(page)
   await dialog(page).getByRole("tab", { name: "Create account" }).click()
+  await expect(panel(page)).toHaveCount(1)
   await panel(page).getByLabel("Email or phone number").fill(email)
   await panel(page).getByLabel("Username").fill(`s${id}`)
   await panel(page).getByLabel("Password", { exact: true }).fill(password)
